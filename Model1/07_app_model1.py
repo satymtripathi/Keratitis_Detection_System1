@@ -37,14 +37,8 @@ from typing import Tuple, List, Dict, Optional
 import streamlit as st
 
 from Limbus_Crop_Segmentation_System.inference_utils import load_model, predict_masks
+from dataclasses import dataclass
 from pathlib import Path
-
-APP_DIR = Path(__file__).resolve().parent          # folder where this .py file exists
-PROJECT_DIR = APP_DIR  # change to APP_DIR.parent if your app is inside a subfolder
-
-def abs_path(p: str) -> str:
-    pth = Path(p)
-    return str(pth if pth.is_absolute() else (PROJECT_DIR / pth).resolve())
 
 
 # ---- WINDOWS STABILITY ----
@@ -54,10 +48,6 @@ cv2.ocl.setUseOpenCL(False)
 # =========================
 # CONFIG
 # =========================
-@dataclass
-from dataclasses import dataclass
-from pathlib import Path
-
 APP_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = APP_DIR  # or APP_DIR.parent depending on your structure
 
