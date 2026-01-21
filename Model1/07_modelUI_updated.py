@@ -48,7 +48,7 @@ cv2.ocl.setUseOpenCL(False)
 @dataclass
 class CFG:
     # ✅ set these to your real paths
-    SEG_CKPT: str = r"C:\Users\satyam.tripathi\Desktop\NoCodeSegmentation\Limbus_Crop_Segmentation_System\model_limbus_crop_unetpp_weighted.pth"
+    SEG_CKPT: str = r"Limbus_Crop_Segmentation_System/model_limbus_crop_unetpp_weighted.pth"
 
     # TRAIN OUT DIR from your training script
     TRAIN_OUT_DIR: str = r"C:\Users\satyam.tripathi\Desktop\NoCodeSegmentation\train_precomputed_run_SAFE_V5_doctorlike"
