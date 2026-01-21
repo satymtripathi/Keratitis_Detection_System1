@@ -51,7 +51,7 @@ class CFG:
     SEG_CKPT: str = r"Limbus_Crop_Segmentation_System/model_limbus_crop_unetpp_weighted.pth"
 
     # TRAIN OUT DIR from your training script
-    TRAIN_OUT_DIR: str = r"Keratitis_Detection_System1/train_precomputed_run_SAFE_V5_doctorlike"
+    TRAIN_OUT_DIR: str = r"train_precomputed_run_SAFE_V5_doctorlike"
     CLS_CKPT: str = r"train_precomputed_run_SAFE_V5_doctorlike/checkpoints/best.pth"
 
     # auto from TRAIN_OUT_DIR
