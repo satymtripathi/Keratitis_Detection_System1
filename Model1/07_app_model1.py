@@ -37,6 +37,15 @@ from typing import Tuple, List, Dict, Optional
 import streamlit as st
 
 from Limbus_Crop_Segmentation_System.inference_utils import load_model, predict_masks
+from pathlib import Path
+
+APP_DIR = Path(__file__).resolve().parent          # folder where this .py file exists
+PROJECT_DIR = APP_DIR  # change to APP_DIR.parent if your app is inside a subfolder
+
+def abs_path(p: str) -> str:
+    pth = Path(p)
+    return str(pth if pth.is_absolute() else (PROJECT_DIR / pth).resolve())
+
 
 # ---- WINDOWS STABILITY ----
 cv2.setNumThreads(0)
@@ -47,18 +56,19 @@ cv2.ocl.setUseOpenCL(False)
 # =========================
 @dataclass
 class CFG:
+    
     # ✅ set these to your real paths
-    SEG_CKPT: str = r"Limbus_Crop_Segmentation_System/model_limbus_crop_unetpp_weighted.pth"
+    cfg.SEG_CKPT = abs_path(r"Limbus_Crop_Segmentation_System/model_limbus_crop_unetpp_weighted.pth")
 
     # TRAIN OUT DIR from your training script
-    TRAIN_OUT_DIR: str = r"train_precomputed_run_SAFE_V5_doctorlike"
-    CLS_CKPT: str = r"train_precomputed_run_SAFE_V5_doctorlike/checkpoints/best.pth"
+    cfg.TRAIN_OUT_DIR = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike")
+    cfg.CLS_CKPT      = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike/checkpoints/best.pth")
 
     # auto from TRAIN_OUT_DIR
-    FEATURE_KEYS_JSON: str = r"train_precomputed_run_SAFE_V5_doctorlike/feature_keys.json"
-    FEAT_MU_NPY: str = r"train_precomputed_run_SAFE_V5_doctorlike/feat_mu.npy"
-    FEAT_SIGMA_NPY: str = r"train_precomputed_run_SAFE_V5_doctorlike/feat_sigma.npy"
-
+    cfg.FEATURE_KEYS_JSON = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike/feature_keys.json")
+    cfg.FEAT_MU_NPY       = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike/feat_mu.npy")
+    cfg.FEAT_SIGMA_NPY    = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike/feat_sigma.npy")
+    
     CLASSES_4: Tuple[str, ...] = ("Edema", "Scar", "Infection", "Normal")
     CLASS_COLORS = {
         "Edema": "#3498db",
