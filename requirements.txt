@@ -1,7 +1,7 @@
 streamlit
 torch
 torchvision
-opencv-python
+opencv-python-headless
 numpy
 segmentation-models-pytorch
 albumentations
@@ -10,3 +10,4 @@ scikit-learn
 scipy
 pandas
 matplotlib
+timm
