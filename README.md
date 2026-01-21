@@ -5,7 +5,10 @@ This repository contains a hybrid Multi-Instance Learning (MIL) and Tabular feat
 ## Project Structure
 - `Model1/`: Core training, batch inference, and Streamlit UI scripts.
 - `Limbus_Crop_Segmentation_System/`: Pre-trained segmentation models (U-Net++) for ROI extraction.
-- `training_results/`: Pre-trained classifier weights and feature metadata.
+- `training_results/`: Pre-trained classifier weights, feature metadata, and training configuration.
+  - `checkpoints/best.pth`: Model weights.
+  - `feature_keys.json`: List of handcrafted features used.
+  - `run_config.json`: Hyperparameters used during training.
 - `requirements.txt`: Python package dependencies.
 
 ## Setup
