@@ -7,7 +7,7 @@
 # 1) Soft attention pooling (uses all tiles)
 # 2) Clinical tile scoring WITH glare + border-edge penalty + opacity reward
 # 3) Uses feat_mu.npy + feat_sigma.npy from TRAIN_OUT_DIR (train-only stats)
-# 4) Uses feature_keys.json from TRAIN_OUT_DIR
+# 4) Uses feature_keys.json from TRAIN_OUT_DIR 
 # 5) Correct q alignment with tiles (after sorting/padding)
 # 6) Valid-mask for padded tiles (no attention on black pads)
 # 7) Works on ONE uploaded raw image (seg -> global -> polar tiles -> features -> classifier)
@@ -48,25 +48,61 @@ cv2.ocl.setUseOpenCL(False)
 # =========================
 # CONFIG
 # =========================
+from dataclasses import dataclass
+from pathlib import Path
+import os
+import streamlit as st
+
+# =========================
+# PATHS (Streamlit-safe)
+# =========================
 APP_DIR = Path(__file__).resolve().parent
-PROJECT_DIR = APP_DIR  # or APP_DIR.parent depending on your structure
+
+# If file is inside Model1/, project root is parent of Model1
+# Example: /mount/src/keratitis_detection_system1/Model1/07_app_model1.py
+PROJECT_DIR = APP_DIR.parent
 
 def abs_path(p: str) -> str:
     pp = Path(p)
     return str(pp if pp.is_absolute() else (PROJECT_DIR / pp).resolve())
 
+def pick_ckpt(train_out_dir: str) -> str:
+    ckpt_dir = Path(train_out_dir) / "checkpoints"
+    preferred = [
+        "best.pth",
+        "best_f1.pth",
+        "best_auc.pth",
+        "best_val_loss.pth",
+        "last.pth"
+    ]
+    for name in preferred:
+        p = ckpt_dir / name
+        if p.exists():
+            return str(p)
+
+    # fallback: latest modified .pth in checkpoints
+    if ckpt_dir.exists():
+        cands = sorted(ckpt_dir.glob("*.pth"), key=lambda x: x.stat().st_mtime, reverse=True)
+        if cands:
+            return str(cands[0])
+
+    raise FileNotFoundError(f"No checkpoint found in: {ckpt_dir}")
+
 @dataclass
 class CFG:
-    SEG_CKPT: str = abs_path(r"Limbus_Crop_Segmentation_System/model_limbus_crop_unetpp_weighted.pth")
-    TRAIN_OUT_DIR: str = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike")
+    # paths
+    SEG_CKPT: str = abs_path("Limbus_Crop_Segmentation_System/model_limbus_crop_unetpp_weighted.pth")
+    TRAIN_OUT_DIR: str = abs_path("train_precomputed_run_SAFE_V5_doctorlike")
 
-    # DON'T set CLS_CKPT using cfg.* here
-    CLS_CKPT: str = ""   # will be filled after cfg is created
+    FEATURE_KEYS_JSON: str = abs_path("train_precomputed_run_SAFE_V5_doctorlike/feature_keys.json")
+    FEAT_MU_NPY: str = abs_path("train_precomputed_run_SAFE_V5_doctorlike/feat_mu.npy")
+    FEAT_SIGMA_NPY: str = abs_path("train_precomputed_run_SAFE_V5_doctorlike/feat_sigma.npy")
 
-    FEATURE_KEYS_JSON: str = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike/feature_keys.json")
-    FEAT_MU_NPY: str = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike/feat_mu.npy")
-    FEAT_SIGMA_NPY: str = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike/feat_sigma.npy")
+    # classifier labels + colors (YOU USE THESE LATER)
+    CLASSES_4: Tuple[str, ...] = ("Edema", "Scar", "Infection", "Normal")
+    CLASS_COLORS: Dict[str, str] = None
 
+    # sizes
     CANONICAL_SIZE: int = 512
     GLOBAL_SIZE: int = 384
     TILE_SIZE: int = 224
@@ -74,7 +110,7 @@ class CFG:
 
     POLAR_THETA: int = 8
     POLAR_RINGS: int = 3
-    RING_EDGES_FRAC: tuple = (0.0, 0.35, 0.70, 1.0)
+    RING_EDGES_FRAC: Tuple[float, float, float, float] = (0.0, 0.35, 0.70, 1.0)
     POLAR_MIN_PIXELS: int = 250
     POLAR_PAD: int = 2
 
@@ -86,6 +122,32 @@ class CFG:
     CROP_MIN_AREA_FRAC: float = 0.002
 
 cfg = CFG()
+
+# Fill CLASS_COLORS after init (dataclass-friendly)
+if cfg.CLASS_COLORS is None:
+    cfg.CLASS_COLORS = {
+        "Edema": "#3498db",
+        "Scar": "#9b59b6",
+        "Infection": "#e74c3c",
+        "Normal": "#2ecc71",
+        "NonInfect_Other": "#9b59b6",
+    }
+
+# Auto-pick checkpoint
+cfg.CLS_CKPT = pick_ckpt(cfg.TRAIN_OUT_DIR)
+
+# Optional: show paths in sidebar for debugging
+st.sidebar.caption("📁 Paths check")
+st.sidebar.code(
+    f"PROJECT_DIR: {PROJECT_DIR}\n"
+    f"SEG_CKPT: {cfg.SEG_CKPT}\n"
+    f"TRAIN_OUT_DIR: {cfg.TRAIN_OUT_DIR}\n"
+    f"CLS_CKPT: {cfg.CLS_CKPT}\n"
+    f"feature_keys.json: {cfg.FEATURE_KEYS_JSON}\n"
+    f"feat_mu.npy: {cfg.FEAT_MU_NPY}\n"
+    f"feat_sigma.npy: {cfg.FEAT_SIGMA_NPY}"
+)
+
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
