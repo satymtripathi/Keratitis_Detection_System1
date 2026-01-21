@@ -55,28 +55,27 @@ cv2.ocl.setUseOpenCL(False)
 # CONFIG
 # =========================
 @dataclass
+from dataclasses import dataclass
+from pathlib import Path
+
+APP_DIR = Path(__file__).resolve().parent
+PROJECT_DIR = APP_DIR  # or APP_DIR.parent depending on your structure
+
+def abs_path(p: str) -> str:
+    pp = Path(p)
+    return str(pp if pp.is_absolute() else (PROJECT_DIR / pp).resolve())
+
+@dataclass
 class CFG:
-    
-    # ✅ set these to your real paths
-    cfg.SEG_CKPT = abs_path(r"Limbus_Crop_Segmentation_System/model_limbus_crop_unetpp_weighted.pth")
+    SEG_CKPT: str = abs_path(r"Limbus_Crop_Segmentation_System/model_limbus_crop_unetpp_weighted.pth")
+    TRAIN_OUT_DIR: str = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike")
 
-    # TRAIN OUT DIR from your training script
-    cfg.TRAIN_OUT_DIR = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike")
-    cfg.CLS_CKPT      = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike/checkpoints/best.pth")
+    # DON'T set CLS_CKPT using cfg.* here
+    CLS_CKPT: str = ""   # will be filled after cfg is created
 
-    # auto from TRAIN_OUT_DIR
-    cfg.FEATURE_KEYS_JSON = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike/feature_keys.json")
-    cfg.FEAT_MU_NPY       = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike/feat_mu.npy")
-    cfg.FEAT_SIGMA_NPY    = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike/feat_sigma.npy")
-    
-    CLASSES_4: Tuple[str, ...] = ("Edema", "Scar", "Infection", "Normal")
-    CLASS_COLORS = {
-        "Edema": "#3498db",
-        "Scar": "#9b59b6",
-        "Infection": "#e74c3c",
-        "Normal": "#2ecc71",
-        "NonInfect_Other": "#9b59b6",
-    }
+    FEATURE_KEYS_JSON: str = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike/feature_keys.json")
+    FEAT_MU_NPY: str = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike/feat_mu.npy")
+    FEAT_SIGMA_NPY: str = abs_path(r"train_precomputed_run_SAFE_V5_doctorlike/feat_sigma.npy")
 
     CANONICAL_SIZE: int = 512
     GLOBAL_SIZE: int = 384
@@ -85,21 +84,19 @@ class CFG:
 
     POLAR_THETA: int = 8
     POLAR_RINGS: int = 3
-    RING_EDGES_FRAC: Tuple[float, float, float, float] = (0.0, 0.35, 0.70, 1.0)
+    RING_EDGES_FRAC: tuple = (0.0, 0.35, 0.70, 1.0)
     POLAR_MIN_PIXELS: int = 250
     POLAR_PAD: int = 2
 
-    # must match training default
     TOP_TILES_FOR_FEATURES: int = 6
-
     TOPK_POOL_DEFAULT: int = 4
     QUALITY_BETA_DEFAULT: float = 0.7
 
-    # ROI rectangle crop improvements
     CROP_RECT_PAD: int = 20
     CROP_MIN_AREA_FRAC: float = 0.002
 
 cfg = CFG()
+
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
 # =========================
