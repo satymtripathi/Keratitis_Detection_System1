@@ -55,9 +55,9 @@ class CFG:
     CLS_CKPT: str = r"train_precomputed_run_SAFE_V5_doctorlike/checkpoints/best.pth"
 
     # auto from TRAIN_OUT_DIR
-    FEATURE_KEYS_JSON: str = r"Keratitis_Detection_System1/train_precomputed_run_SAFE_V5_doctorlike/feature_keys.json"
-    FEAT_MU_NPY: str = r"Keratitis_Detection_System1/train_precomputed_run_SAFE_V5_doctorlike/feat_mu.npy"
-    FEAT_SIGMA_NPY: str = r"Keratitis_Detection_System1/train_precomputed_run_SAFE_V5_doctorlike/feat_sigma.npy"
+    FEATURE_KEYS_JSON: str = r"train_precomputed_run_SAFE_V5_doctorlike/feature_keys.json"
+    FEAT_MU_NPY: str = r"train_precomputed_run_SAFE_V5_doctorlike/feat_mu.npy"
+    FEAT_SIGMA_NPY: str = r"train_precomputed_run_SAFE_V5_doctorlike/feat_sigma.npy"
 
     CLASSES_4: Tuple[str, ...] = ("Edema", "Scar", "Infection", "Normal")
     CLASS_COLORS = {
