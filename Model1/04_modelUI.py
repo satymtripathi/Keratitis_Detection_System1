@@ -55,7 +55,7 @@ class CFG:
     TOP_TILES_FOR_FEATURES: int = 6
 
     TOPK_POOL_DEFAULT: int = 4
-    QUALITY_BETA_DEFAULT: float = 0.7
+    QUALITY_BETA_DEFAULT: float = 0.2
 
     # ROI rectangle crop improvements
     CROP_RECT_PAD: int = 20
