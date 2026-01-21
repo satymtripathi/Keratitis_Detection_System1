@@ -28,9 +28,9 @@ cv2.ocl.setUseOpenCL(False)
 # =========================
 @dataclass
 class CFG:
-    SEG_CKPT: str = r"Limbus_Crop_Segmentation_System\model_limbus_crop_unetpp_weighted.pth"
-    CLS_CKPT: str = r"training_results\checkpoints\best.pth"
-    FEATURE_KEYS_JSON: str = r"training_results\feature_keys.json"
+    SEG_CKPT: str = r"Limbus_Crop_Segmentation_System/model_limbus_crop_unetpp_weighted.pth"
+    CLS_CKPT: str = r"training_results/checkpoints/best.pth"
+    FEATURE_KEYS_JSON: str = r"training_results/feature_keys.json"
 
     CLASSES_4: Tuple[str, ...] = ("Edema", "Scar", "Infection", "Normal")
     CLASS_COLORS = {
